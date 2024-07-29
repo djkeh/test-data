@@ -1,20 +1,82 @@
 package uno.fastcampus.testdata.domain;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import uno.fastcampus.testdata.domain.constant.MockDataType;
 
-@Getter
-@Setter
-@ToString
-public class SchemaField {
+import java.util.Objects;
 
-    private String fieldName;
-    private MockDataType mockDataType;
-    private Integer fieldOrder;
-    private Integer blackPercent;
-    private String typeOptionJson;
-    private String forceValue;
+/**
+ * 특정 {@link TableSchema}의 단위 필드 정보.
+ * 이 필드들이 모여서 테이블 스키마를 구성한다.
+ *
+ * @author Uno
+ */
+@Getter
+@ToString(callSuper = true)
+@Entity
+public class SchemaField extends AuditingFields {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Setter
+    @ManyToOne(optional = false)
+    private TableSchema tableSchema;
+
+    @Setter private @Column(nullable = false) String fieldName;
+    @Setter private @Column(nullable = false) MockDataType mockDataType;
+    @Setter private @Column(nullable = false) Integer fieldOrder;
+    @Setter private @Column(nullable = false) Integer blankPercent;
+
+    @Setter private String typeOptionJson;
+    @Setter private String forceValue;
+
+
+    protected SchemaField() {}
+
+    public SchemaField(String fieldName, MockDataType mockDataType, Integer fieldOrder, Integer blankPercent, String typeOptionJson, String forceValue) {
+        this.fieldName = fieldName;
+        this.mockDataType = mockDataType;
+        this.fieldOrder = fieldOrder;
+        this.blankPercent = blankPercent;
+        this.typeOptionJson = typeOptionJson;
+        this.forceValue = forceValue;
+    }
+
+    public static SchemaField of(String fieldName, MockDataType mockDataType, Integer fieldOrder, Integer blankPercent, String typeOptionJson, String forceValue) {
+        return new SchemaField(fieldName, mockDataType, fieldOrder, blankPercent, typeOptionJson, forceValue);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SchemaField that)) return false;
+
+        if (that.getId() == null) {
+            return Objects.equals(this.getTableSchema().getId(), that.getTableSchema().getId()) &&
+                    Objects.equals(this.getMockDataType(), that.getMockDataType()) &&
+                    Objects.equals(this.getFieldName(), that.getFieldName()) &&
+                    Objects.equals(this.getFieldOrder(), that.getFieldOrder()) &&
+                    Objects.equals(this.getBlankPercent(), that.getBlankPercent()) &&
+                    Objects.equals(this.getTypeOptionJson(), that.getTypeOptionJson()) &&
+                    Objects.equals(this.getForceValue(), that.getForceValue());
+        }
+
+        return Objects.equals(this.getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        if (getId() == null) {
+            return Objects.hash(getTableSchema().getId(), getMockDataType(), getFieldName(), getFieldOrder(), getBlankPercent(), getTypeOptionJson(), getForceValue());
+        }
+
+        return Objects.hash(getId());
+    }
 
 }
