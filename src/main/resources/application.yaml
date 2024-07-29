@@ -7,7 +7,10 @@ logging:
 
 spring:
   application.name: test-data
-  datasource.url: jdbc:h2:mem:testdb
+  datasource:
+    url: ${LOCAL_DB_URL}
+    username: ${LOCAL_DB_USER}
+    password: ${LOCAL_DB_PW}
   jpa:
     open-in-view: false
     defer-datasource-initialization: true
