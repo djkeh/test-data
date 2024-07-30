@@ -26,14 +26,10 @@ public class TableSchema extends AuditingFields {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter private String schemaName;
-    @Setter private String userId;
-    @Setter private LocalDateTime exportedAt;
+    @Setter @Column(nullable = false) private String schemaName;
+    @Setter @Column(nullable = false) private String userId;
 
-    private LocalDateTime createdAt;
-    private String createdBy;
-    private LocalDateTime modifiedAt;
-    private String modifiedBy;
+    @Setter private LocalDateTime exportedAt;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "tableSchema", cascade = CascadeType.ALL, orphanRemoval = true)
