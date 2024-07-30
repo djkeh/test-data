@@ -27,10 +27,10 @@ public class SchemaField extends AuditingFields {
     @ManyToOne(optional = false)
     private TableSchema tableSchema;
 
-    @Setter private @Column(nullable = false) String fieldName;
-    @Setter private @Column(nullable = false) MockDataType mockDataType;
-    @Setter private @Column(nullable = false) Integer fieldOrder;
-    @Setter private @Column(nullable = false) Integer blankPercent;
+    @Setter @Column(nullable = false) private String fieldName;
+    @Setter @Column(nullable = false) @Enumerated(EnumType.STRING) private MockDataType mockDataType;
+    @Setter @Column(nullable = false) private Integer fieldOrder;
+    @Setter @Column(nullable = false) private Integer blankPercent;
 
     @Setter private String typeOptionJson;
     @Setter private String forceValue;
