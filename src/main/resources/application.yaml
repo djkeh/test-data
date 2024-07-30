@@ -4,6 +4,8 @@ logging:
   level:
     uno.fastcampus.testdata: debug
     org.springframework.web.servlet: debug
+    org.hibernate.orm.jdbc.bind: trace
+    org.springframework.test.context.transaction.TransactionContext: debug
 
 spring:
   application.name: test-data
