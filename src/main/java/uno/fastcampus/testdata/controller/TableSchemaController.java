@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uno.fastcampus.testdata.dto.request.TableSchemaRequest;
 
 @Controller
@@ -17,7 +18,12 @@ public class TableSchemaController {
     }
 
     @PostMapping("/table-schema")
-    public String createOrUpdateTableSchema() {
+    public String createOrUpdateTableSchema(
+            TableSchemaRequest tableSchemaRequest,
+            RedirectAttributes redirectAttrs
+    ) {
+        redirectAttrs.addFlashAttribute("tableSchemaRequest", tableSchemaRequest);
+
         return "redirect:/table-schema";
     }
 
