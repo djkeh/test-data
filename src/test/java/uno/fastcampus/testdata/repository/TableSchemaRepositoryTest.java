@@ -13,7 +13,6 @@ import uno.fastcampus.testdata.domain.TableSchema;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("[Repository] 테이블 스키마 쿼리 테스트")
 @ActiveProfiles("test")

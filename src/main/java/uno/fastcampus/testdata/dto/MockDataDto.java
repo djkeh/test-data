@@ -16,4 +16,5 @@ public record MockDataDto(
                 entity.getMockDataValue()
         );
     }
+
 }

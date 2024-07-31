@@ -1,6 +1,8 @@
 package uno.fastcampus.testdata.dto.request;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import uno.fastcampus.testdata.dto.TableSchemaDto;
 
 import java.util.List;

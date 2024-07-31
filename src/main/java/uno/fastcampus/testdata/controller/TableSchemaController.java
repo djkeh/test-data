@@ -44,4 +44,5 @@ public class TableSchemaController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=table-schema.txt")
                 .body("download complete!"); // TODO: 나중에 데이터 바꿔야 함
     }
+
 }
