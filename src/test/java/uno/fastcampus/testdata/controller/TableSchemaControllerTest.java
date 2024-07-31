@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("[Controller] 테이블 스키마 컨트롤러 테스트")
 @Import({SecurityConfig.class, FormDataEncoder.class})
 @WebMvcTest
-public record TableSchemaControllerTest(
+record TableSchemaControllerTest(
         @Autowired MockMvc mvc,
         @Autowired FormDataEncoder formDataEncoder
 ) {
