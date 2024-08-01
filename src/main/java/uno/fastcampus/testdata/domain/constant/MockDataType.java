@@ -8,6 +8,7 @@ import java.util.Set;
 @Getter
 @RequiredArgsConstructor
 public enum MockDataType {
+
     STRING(Set.of("minLength", "maxLength", "pattern"), null),
     NUMBER(Set.of("min", "max", "decimals"), null),
     BOOLEAN(Set.of(), null),
