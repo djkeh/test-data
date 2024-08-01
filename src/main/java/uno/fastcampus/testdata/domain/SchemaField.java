@@ -57,7 +57,7 @@ public class SchemaField extends AuditingFields {
         if (this == o) return true;
         if (!(o instanceof SchemaField that)) return false;
 
-        if (that.getId() == null) {
+        if (this.getId() == null) {
             return Objects.equals(this.getTableSchema().getId(), that.getTableSchema().getId()) &&
                     Objects.equals(this.getMockDataType(), that.getMockDataType()) &&
                     Objects.equals(this.getFieldName(), that.getFieldName()) &&
