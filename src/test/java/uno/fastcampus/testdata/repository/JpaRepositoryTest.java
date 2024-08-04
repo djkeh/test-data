@@ -157,7 +157,7 @@ class JpaRepositoryTest {
         try {
             return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException jpe) {
-            throw new RuntimeException("JSON 반환 테스트중 오류 발생", jpe);
+            throw new RuntimeException("JSON 변환 테스트중 오류 발생", jpe);
         }
     }
 

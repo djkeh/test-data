@@ -23,13 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("[Controller] 테이블 스키마 컨트롤러 테스트")
 @Import({SecurityConfig.class, FormDataEncoder.class})
-@WebMvcTest
-public record TableSchemaControllerTest(
+@WebMvcTest(TableSchemaController.class)
+record TableSchemaControllerTest(
         @Autowired MockMvc mvc,
         @Autowired FormDataEncoder formDataEncoder
 ) {
 
-    @DisplayName("[GET] 테이블 스키마 페이지 -> 테이블 스키마 뷰 (정상)")
+    @DisplayName("[GET] 테이블 스키마 조회, 비로그인 최초 진입 (정상)")
     @Test
     void givenNothing_whenRequesting_thenShowsTableSchemaView() throws Exception {
         // Given
@@ -67,7 +67,7 @@ public record TableSchemaControllerTest(
                 .andExpect(redirectedUrl("/table-schema"));
     }
 
-    @DisplayName("[GET] 내 스키마 목록 페이지 -> 내 스키마 목록 뷰 (정상)")
+    @DisplayName("[GET] 내 스키마 목록 조회 (정상)")
     @Test
     void givenAuthenticatedUser_whenRequesting_thenShowsMySchemaView() throws Exception {
         // Given
@@ -94,7 +94,7 @@ public record TableSchemaControllerTest(
                 .andExpect(redirectedUrl("/my-schemas"));
     }
 
-    @DisplayName("[GET] 테이블 스키마 파일 다운로드 -> 테이블 스키마 파일 (정상)")
+    @DisplayName("[GET] 테이블 스키마 파일 다운로드 (정상)")
     @Test
     void givenTableSchema_whenDownloading_thenReturnsFile() throws Exception {
         // Given
