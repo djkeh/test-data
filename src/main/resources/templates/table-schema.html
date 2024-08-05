@@ -133,7 +133,7 @@
       enrollDeleteRowEvent(btn, schemaFieldList);
     });
 
-    schemaFieldList.on('updated', list => { console.log(list.items); resetData(list); });
+    schemaFieldList.on('updated', list => resetData(list));
     document.getElementById('add-row').addEventListener('click', () => {
       schemaFieldList.add({});
       const lastRow = schemaFieldList.items.at(-1).elm
