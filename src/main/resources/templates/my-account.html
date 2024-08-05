@@ -1,10 +1,55 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>내 정보</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>테스트 데이터 생성기 - 내 정보</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
-<body>
-내 정보 페이지
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+      <a th:href="@{/}" class="text-2xl font-bold text-sky-600">테스트 데이터 생성기</a>
+      <nav>
+        <a th:href="@{/table-schema/my-schemas}" class="text-gray-600 hover:text-sky-600 mx-2">내 스키마</a>
+        <a th:href="@{/my-account}" class="text-gray-600 hover:text-sky-600 mx-2">내 정보</a>
+        <a th:href="'#'" class="text-gray-600 hover:text-sky-600 mx-2">로그인</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 flex-grow">
+    <section class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-600 mb-6 text-left">내 정보</h1>
+    </section>
+
+    <section class="bg-white shadow rounded-lg p-6 mb-6">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">닉네임</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이메일</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-600" th:text="${nickname}">-</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${email}">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-white shadow w-full mt-auto">
+    <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+      © 2024 FastCampus, Inc
+    </div>
+  </footer>
+
 </body>
 </html>
