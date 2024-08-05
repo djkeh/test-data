@@ -1,10 +1,183 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>테이블 스키마</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>테스트 데이터 생성기 - 테이블 스키마</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
-<body>
-테이블 스키마 페이지
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+      <a th:href="@{/}" class="text-2xl font-bold text-sky-600">테스트 데이터 생성기</a>
+      <nav>
+        <a th:href="'#'" class="text-gray-600 hover:text-sky-600 mx-2">내 스키마</a>
+        <a th:href="'#'" class="text-gray-600 hover:text-sky-600 mx-2">내 정보</a>
+        <a th:href="'#'" class="text-gray-600 hover:text-sky-600 mx-2">로그인</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 flex-grow">
+    <form name="table-schema-form" th:action="@{/table-schema}" method="post">
+      <section class="bg-white shadow rounded-lg p-6 mb-6" th:object="${tableSchema}">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">테이블 스키마 만들기</h2>
+
+        <div class="flex items-center space-x-4 mb-4">
+          <label for="schemaName" class="block text-sm font-medium text-gray-500 w-24">테이블명</label>
+          <input type="text" id="schemaName" th:field="*{schemaName}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        </div>
+
+        <hr class="mb-4">
+
+        <div class="grid grid-cols-5 gap-4 mb-4">
+          <div class="block text-sm font-medium text-gray-400">Field Name</div>
+          <div class="block text-sm font-medium text-gray-400">Type</div>
+          <div class="block text-sm font-medium text-gray-400">Blank</div>
+          <div class="block text-sm font-medium text-gray-400">Options</div>
+          <div class="block text-sm font-medium text-gray-400">직접 입력</div>
+        </div>
+        <div id="schema-field-list">
+          <ul id="field-list" class="list">
+            <li th:data-id="${iterStat.index + 1}" class="grid grid-cols-5 gap-4 mb-4" th:each="field, iterStat : *{schemaFields}">
+              <div class="flex items-center">
+                <i class="handle fas fa-grip-lines mr-2 cursor-move"></i>
+                <label>
+                  <input type="text" th:field="*{schemaFields[__${iterStat.index}__].fieldName}" class="field-name-id field-name-name mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="필드명" required>
+                </label>
+              </div>
+              <div>
+                <label>
+                  <select th:field="*{schemaFields[__${iterStat.index}__].mockDataType}" class="data-type-id data-type-name mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                    <option th:each="type : ${mockDataTypes}" th:value="${type.name}" th:text="${type.name}">Type</option>
+                  </select>
+                </label>
+              </div>
+              <div class="flex items-center">
+                <label>
+                  <input type="number" th:field="*{schemaFields[__${iterStat.index}__].blankPercent}" class="blank-percent-id blank-percent-name mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                </label>
+              </div>
+              <div class="flex items-center">
+                <label>
+                  <input type="text" th:field="*{schemaFields[__${iterStat.index}__].typeOptionJson}" class="type-option-id type-option-name mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </label>
+              </div>
+              <div class="flex items-center">
+                <label class="w-full">
+                  <input type="text" th:field="*{schemaFields[__${iterStat.index}__].forceValue}" class="force-value-id force-value-name mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </label>
+                <i class="delete-row fas fa-trash ml-2 cursor-pointer"></i>
+              </div>
+
+              <input type="hidden" th:field="*{schemaFields[__${iterStat.index}__].fieldOrder}" class="field-order-id field-order-name field-order-value">
+            </li>
+          </ul>
+        </div>
+
+        <button type="button" id="add-row" class="mt-4 bg-sky-600 text-white py-2 px-4 rounded hover:bg-sky-700">열 추가</button>
+        <button type="submit" class="mt-4 bg-sky-600 text-white py-2 px-4 rounded hover:bg-sky-700">저장</button>
+      </section>
+
+      <section th:object="${tableSchema}">
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <div class="flex items-center space-x-4">
+            <label for="rowCount" class="block text-sm font-medium text-gray-500 w-1/6">열 개수</label>
+            <input type="number" id="rowCount" name="rowCount" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+          </div>
+          <div class="flex items-center space-x-4">
+            <label for="fileType" class="block text-sm font-medium text-gray-500 w-1/6">Format</label>
+            <select id="fileType" name="fileType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+              <option th:each="fileType : ${fileTypes}" th:value="${fileType}" th:text="${fileType}">Format</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <button type="button" id="export" class="mt-4 bg-sky-600 text-white py-2 px-4 rounded hover:bg-sky-700">Generate</button>
+        </div>
+      </section>
+    </form>
+  </main>
+
+  <footer class="bg-white shadow w-full mt-auto">
+    <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+      © 2024 FastCampus, Inc
+    </div>
+  </footer>
+
+  <script>
+    const schemaFieldList = new List('schema-field-list', {
+      valueNames: [
+        { data: ['id'] },
+        { name: 'field-name-id', attr: 'id' },
+        { name: 'field-name-name', attr: 'name' },
+        { name: 'data-type-id', attr: 'id' },
+        { name: 'data-type-name', attr: 'name' },
+        { name: 'blank-percent-id', attr: 'id' },
+        { name: 'blank-percent-name', attr: 'name' },
+        { name: 'type-option-id', attr: 'id' },
+        { name: 'type-option-name', attr: 'name' },
+        { name: 'force-value-id', attr: 'id' },
+        { name: 'force-value-name', attr: 'name' },
+        { name: 'field-order-id', attr: 'id' },
+        { name: 'field-order-name', attr: 'name' },
+        { name: 'field-order-value', attr: 'value' },
+      ]
+    });
+
+    document.querySelectorAll('.delete-row').forEach(btn => {
+      enrollDeleteRowEvent(btn, schemaFieldList);
+    });
+
+    schemaFieldList.on('updated', list => { console.log(list.items); resetData(list); });
+    document.getElementById('add-row').addEventListener('click', () => {
+      schemaFieldList.add({});
+      const lastRow = schemaFieldList.items.at(-1).elm
+      enrollDeleteRowEvent(lastRow.querySelector('.delete-row'), schemaFieldList);
+    });
+    document.getElementById('export').addEventListener('click', () => {
+      document.forms['table-schema-form'].action = '/table-schema/export';
+      document.forms['table-schema-form'].method = 'get';
+      document.forms['table-schema-form'].requestSubmit();
+      document.forms['table-schema-form'].action = '/table-schema';
+      document.forms['table-schema-form'].method = 'post';
+    });
+
+    function enrollDeleteRowEvent(btn, list) {
+      btn.addEventListener('click', e => {
+        const parentList = e.target.closest('li');
+        const fieldOrderInput = parentList.querySelector('.field-order-value');
+        if (fieldOrderInput) {
+          list.remove('field-order-value', fieldOrderInput.value);
+        }
+      });
+    }
+
+    function resetData(list) {
+      list.reIndex();
+      for (const [index, item] of list.items.entries()) {
+        item.values({
+          'id': index + 1,
+          'field-name-id': `schemaFields${index}.fieldName`,
+          'field-name-name': `schemaFields[${index}].fieldName`,
+          'data-type-id': `schemaFields${index}.mockDataType`,
+          'data-type-name': `schemaFields[${index}].mockDataType`,
+          'blank-percent-id': `schemaFields${index}.blankPercent`,
+          'blank-percent-name': `schemaFields[${index}].blankPercent`,
+          'type-option-id': `schemaFields${index}.typeOptionJson`,
+          'type-option-name': `schemaFields[${index}].typeOptionJson`,
+          'force-value-id': `schemaFields${index}.forceValue`,
+          'force-value-name': `schemaFields[${index}].forceValue`,
+          'field-order-id': `schemaFields${index}.fieldOrder`,
+          'field-order-name': `schemaFields[${index}].fieldOrder`,
+          'field-order-value': index + 1,
+        });
+      }
+    }
+  </script>
 </body>
 </html>
