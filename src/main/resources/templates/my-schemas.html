@@ -1,10 +1,90 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>내 테이블 스키마 목록</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>테스트 데이터 생성기 - 내 스키마 목록</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    .sort.asc::after {
+      content: "\0025BC";
+      padding-left: 3px;
+    }
+    .sort.desc::after {
+      content: "\0025B2";
+      padding-left: 3px;
+    }
+  </style>
 </head>
-<body>
-내 테이블 스키마 목록 페이지
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+      <a th:href="@{/}" class="text-2xl font-bold text-sky-600">테스트 데이터 생성기</a>
+      <nav>
+        <a th:href="@{/table-schema/my-schemas}" class="text-gray-600 hover:text-sky-600 mx-2">내 스키마</a>
+        <a th:href="@{/my-account}" class="text-gray-600 hover:text-sky-600 mx-2">내 정보</a>
+        <a th:href="'#'" class="text-gray-600 hover:text-sky-600 mx-2">로그인</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 flex-grow">
+    <section class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-600 mb-6 text-left">내 스키마</h1>
+      <div class="flex justify-start space-x-4">
+        <a th:href="@{/table-schema}" class="bg-sky-600 text-white py-2 px-4 rounded hover:bg-sky-700">스키마 만들기</a>
+      </div>
+    </section>
+
+    <section id="my-schemas" class="bg-white shadow rounded-lg p-6 mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-700">스키마 목록</h2>
+        <div class="flex space-x-2">
+          <input type="search" placeholder="스키마 이름 검색.." class="search border-gray-300 rounded-md shadow-sm px-2 py-1">
+          <button data-sort="schema-name" class="sort bg-sky-600 text-white py-1 px-4 rounded hover:bg-sky-700">이름순 정렬</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-7/12">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Last Modified</th>
+              <th class="px-6 py-3 w-1/12 text-right">
+                <i class="fas fa-trash-alt text-gray-500"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="list bg-white divide-y divide-gray-200">
+            <tr th:each="tableSchema : ${tableSchemas}">
+              <td class="schema-name px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 hover:underline">
+                <a th:href="@{/table-schema(schemaName=${tableSchema.schemaName})}" th:text="${tableSchema.schemaName}">sample_schema</a>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${tableSchema.modifiedAt}">-</td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <form th:action="@{/table-schema/my-schemas/{schemaName}(schemaName=${tableSchema.schemaName})}" method="post" class="inline">
+                  <button type="submit" class="text-red-600"><i class="fas fa-trash-alt"></i></button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-white shadow w-full mt-auto">
+    <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+      © 2024 FastCampus, Inc
+    </div>
+  </footer>
+
+  <script>
+    const mySchema = new List('my-schemas', { valueNames: [ 'schema-name' ]});
+  </script>
 </body>
 </html>

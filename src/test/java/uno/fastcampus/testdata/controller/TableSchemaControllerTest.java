@@ -19,6 +19,7 @@ import uno.fastcampus.testdata.util.FormDataEncoder;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,6 +46,27 @@ record TableSchemaControllerTest(
                 .andExpect(model().attributeExists("tableSchema"))
                 .andExpect(model().attributeExists("mockDataTypes"))
                 .andExpect(model().attributeExists("fileTypes"))
+                .andExpect(view().name("table-schema"));
+    }
+
+    @DisplayName("[GET] 테이블 스키마 조회, 로그인 + 특정 테이블 스키마 (정상)")
+    @Test
+    void givenAuthenticatedUserAndSchemaName_whenRequesting_thenShowsTableSchemaView() throws Exception {
+        // Given
+        var schemaName = "test_schema";
+
+        // When & Then
+        mvc.perform(
+                get("/table-schema")
+                        .queryParam("schemaName", schemaName)
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(model().attributeExists("tableSchema"))
+//                .andExpect(model().attribute("tableSchema", hasProperty("schemaName", is(schemaName)))) // dto가 record여서 불가능한 방식
+                .andExpect(model().attributeExists("mockDataTypes"))
+                .andExpect(model().attributeExists("fileTypes"))
+                .andExpect(content().string(containsString(schemaName))) // html 전체 검사하므로 정확하지 않은 테스트 방식
                 .andExpect(view().name("table-schema"));
     }
 
@@ -83,6 +105,7 @@ record TableSchemaControllerTest(
         mvc.perform(get("/table-schema/my-schemas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(model().attributeExists("tableSchemas"))
                 .andExpect(view().name("my-schemas"));
     }
 
@@ -98,7 +121,7 @@ record TableSchemaControllerTest(
                         .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/my-schemas"));
+                .andExpect(redirectedUrl("/table-schema/my-schemas"));
     }
 
     @DisplayName("[GET] 테이블 스키마 파일 다운로드 (정상)")

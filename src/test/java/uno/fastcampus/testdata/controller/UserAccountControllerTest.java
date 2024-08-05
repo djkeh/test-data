@@ -28,6 +28,8 @@ record UserAccountControllerTest(@Autowired MockMvc mvc) {
         mvc.perform(get("/my-account"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(model().attributeExists("nickname"))
+                .andExpect(model().attributeExists("email"))
                 .andExpect(view().name("my-account"));
     }
 
