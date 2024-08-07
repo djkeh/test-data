@@ -15,10 +15,9 @@ import java.util.stream.Collectors;
 public class TableSchemaRequest {
 
     private String schemaName;
-    private String userId;
     private List<SchemaFieldRequest> schemaFields;
 
-    public TableSchemaDto toDto() {
+    public TableSchemaDto toDto(String userId) {
         return TableSchemaDto.of(
                 schemaName,
                 userId,
