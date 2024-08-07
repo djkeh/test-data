@@ -97,7 +97,7 @@ class TableSchemaControllerTest {
                         SchemaFieldRequest.of("age", MockDataType.NUMBER, 3, 20, null, null)
                 )
         );
-        willDoNothing().given(tableSchemaService).saveMySchema(request.toDto(githubUser.id()));
+        willDoNothing().given(tableSchemaService).upsertTableSchema(request.toDto(githubUser.id()));
 
         // When & Then
         mvc.perform(
@@ -108,9 +108,8 @@ class TableSchemaControllerTest {
                         .with(oauth2Login().oauth2User(githubUser))
         )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("tableSchemaRequest", request))
-                .andExpect(redirectedUrl("/table-schema"));
-        then(tableSchemaService).should().saveMySchema(request.toDto(githubUser.id()));
+                .andExpect(redirectedUrlTemplate("/table-schema?schemaName={schemaName}", request.getSchemaName()));
+        then(tableSchemaService).should().upsertTableSchema(request.toDto(githubUser.id()));
     }
 
     @DisplayName("[GET] 내 스키마 목록 조회 (비로그인)")

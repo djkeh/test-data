@@ -56,9 +56,9 @@ public class TableSchemaController {
             TableSchemaRequest tableSchemaRequest,
             RedirectAttributes redirectAttrs
     ) {
-        tableSchemaService.saveMySchema(tableSchemaRequest.toDto(githubUser.id()));
+        tableSchemaService.upsertTableSchema(tableSchemaRequest.toDto(githubUser.id()));
 
-        redirectAttrs.addFlashAttribute("tableSchemaRequest", tableSchemaRequest);
+        redirectAttrs.addAttribute("schemaName", tableSchemaRequest.getSchemaName());
 
         return "redirect:/table-schema";
     }
