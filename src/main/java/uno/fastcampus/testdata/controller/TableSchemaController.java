@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +20,9 @@ import uno.fastcampus.testdata.dto.request.TableSchemaRequest;
 import uno.fastcampus.testdata.dto.response.SchemaFieldResponse;
 import uno.fastcampus.testdata.dto.response.SimpleTableSchemaResponse;
 import uno.fastcampus.testdata.dto.response.TableSchemaResponse;
+import uno.fastcampus.testdata.dto.security.GithubUser;
+import uno.fastcampus.testdata.service.TableSchemaService;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +30,7 @@ import java.util.List;
 @Controller
 public class TableSchemaController {
 
+    private final TableSchemaService tableSchemaService;
     private final ObjectMapper mapper;
 
     @GetMapping("/table-schema")
@@ -57,8 +60,14 @@ public class TableSchemaController {
     }
 
     @GetMapping("/table-schema/my-schemas")
-    public String mySchemas(Model model) {
-        var tableSchemas = mySampleSchemas();
+    public String mySchemas(
+            @AuthenticationPrincipal GithubUser githubUser,
+            Model model
+    ) {
+        List<SimpleTableSchemaResponse> tableSchemas = tableSchemaService.loadMySchemas(githubUser.id())
+                .stream()
+                .map(SimpleTableSchemaResponse::fromDto)
+                .toList();
 
         model.addAttribute("tableSchemas", tableSchemas);
 
@@ -89,14 +98,6 @@ public class TableSchemaController {
                         new SchemaFieldResponse("age", MockDataType.NUMBER, 3, 20, null, null),
                         new SchemaFieldResponse("my_car", MockDataType.CAR, 4, 50, null, null)
                 )
-        );
-    }
-
-    private static List<SimpleTableSchemaResponse> mySampleSchemas() {
-        return List.of(
-                new SimpleTableSchemaResponse("schema_name1", "Uno", LocalDate.of(2024, 1, 1).atStartOfDay()),
-                new SimpleTableSchemaResponse("schema_name2", "Uno", LocalDate.of(2024, 2, 2).atStartOfDay()),
-                new SimpleTableSchemaResponse("schema_name3", "Uno", LocalDate.of(2024, 3, 3).atStartOfDay())
         );
     }
 
