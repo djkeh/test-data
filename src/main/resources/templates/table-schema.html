@@ -63,7 +63,7 @@
               </div>
               <div class="flex items-center">
                 <label>
-                  <input type="number" th:field="*{schemaFields[__${iterStat.index}__].blankPercent}" class="blank-percent-id blank-percent-name mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                  <input type="number" min="0" max="100" th:field="*{schemaFields[__${iterStat.index}__].blankPercent}" class="blank-percent-id blank-percent-name mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
                 </label>
               </div>
               <div class="flex items-center">
@@ -91,7 +91,7 @@
         <div class="grid grid-cols-3 gap-4 mb-4">
           <div class="flex items-center space-x-4">
             <label for="rowCount" class="block text-sm font-medium text-gray-500 w-1/6">열 개수</label>
-            <input type="number" id="rowCount" name="rowCount" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            <input type="number" min="1" max="1000" value="1" id="rowCount" name="rowCount" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
           </div>
           <div class="flex items-center space-x-4">
             <label for="fileType" class="block text-sm font-medium text-gray-500 w-1/6">Format</label>
