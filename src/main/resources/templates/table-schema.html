@@ -106,6 +106,15 @@
           <button type="button" id="export" class="mt-4 bg-sky-600 text-white py-2 px-4 rounded hover:bg-sky-700">Generate</button>
         </div>
       </section>
+
+      <section id="loading-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white shadow-lg rounded-lg p-6">
+          <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-sky-600 text-3xl"></i>
+            <p class="text-gray-600 mt-4">파일을 다운로드 중입니다. 잠시만 기다려주세요...</p>
+          </div>
+        </div>
+      </section>
     </form>
   </main>
 
@@ -154,12 +163,44 @@
       const lastRow = schemaFieldList.items.at(-1).elm
       enrollDeleteRowEvent(lastRow.querySelector('.delete-row'), schemaFieldList);
     });
-    document.getElementById('export').addEventListener('click', () => {
-      document.forms['table-schema-form'].action = '/table-schema/export';
-      document.forms['table-schema-form'].method = 'get';
-      document.forms['table-schema-form'].requestSubmit();
-      document.forms['table-schema-form'].action = '/table-schema';
-      document.forms['table-schema-form'].method = 'post';
+    document.getElementById('export').addEventListener('click', async () => {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      const form = document.forms['table-schema-form'];
+      const formData = new FormData(form);
+      const params = new URLSearchParams(formData);
+
+      loadingOverlay.classList.remove('hidden');
+
+      try {
+        const response = await fetch(`/table-schema/export?${params}`, { method: 'GET' });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const blob = await response.blob();
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let fileName = 'download.txt'; // 기본 파일 이름
+        if (contentDisposition && contentDisposition.includes('attachment')) {
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (match) {
+            fileName = match[1];
+          }
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('파일 다운로드 중 오류가 발생하였습니다.', error);
+      } finally {
+        loadingOverlay.classList.add('hidden');
+      }
     });
 
     function enrollDeleteRowEvent(btn, list) {
