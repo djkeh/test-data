@@ -133,6 +133,7 @@
         { name: 'field-order-value', attr: 'value' },
       ]
     });
+    schemaFieldList.sort('field-order-value', { order: 'asc' });
 
     document.querySelectorAll('.delete-row').forEach(btn => {
       enrollDeleteRowEvent(btn, schemaFieldList);
