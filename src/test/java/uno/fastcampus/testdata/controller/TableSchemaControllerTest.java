@@ -15,12 +15,14 @@ import uno.fastcampus.testdata.domain.constant.MockDataType;
 import uno.fastcampus.testdata.dto.request.SchemaFieldRequest;
 import uno.fastcampus.testdata.dto.request.TableSchemaExportRequest;
 import uno.fastcampus.testdata.dto.request.TableSchemaRequest;
+import uno.fastcampus.testdata.dto.security.GithubUser;
 import uno.fastcampus.testdata.util.FormDataEncoder;
 
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,12 +55,14 @@ record TableSchemaControllerTest(
     @Test
     void givenAuthenticatedUserAndSchemaName_whenRequesting_thenShowsTableSchemaView() throws Exception {
         // Given
+        var githubUser = new GithubUser("test-id", "test-name", "test@email.com");
         var schemaName = "test_schema";
 
         // When & Then
         mvc.perform(
                 get("/table-schema")
                         .queryParam("schemaName", schemaName)
+                        .with(oauth2Login().oauth2User(githubUser))
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -74,6 +78,7 @@ record TableSchemaControllerTest(
     @Test
     void givenTableSchemaRequest_whenCreatingOrUpdating_thenRedirectsToTableSchemaView() throws Exception {
         // Given
+        var githubUser = new GithubUser("test-id", "test-name", "test@email.com");
         TableSchemaRequest request = TableSchemaRequest.of(
                 "test_schema",
                 "홍길동",
@@ -90,19 +95,35 @@ record TableSchemaControllerTest(
                         .content(formDataEncoder.encode(request))
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .with(csrf())
+                        .with(oauth2Login().oauth2User(githubUser))
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("tableSchemaRequest", request))
                 .andExpect(redirectedUrl("/table-schema"));
     }
 
-    @DisplayName("[GET] 내 스키마 목록 조회 (정상)")
+    @DisplayName("[GET] 내 스키마 목록 조회 (비로그인)")
     @Test
-    void givenAuthenticatedUser_whenRequesting_thenShowsMySchemaView() throws Exception {
+    void givenNothing_whenRequesting_thenRedirectsToLogin() throws Exception {
         // Given
 
         // When & Then
         mvc.perform(get("/table-schema/my-schemas"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/oauth2/authorization/github"));
+    }
+
+    @DisplayName("[GET] 내 스키마 목록 조회 (정상)")
+    @Test
+    void givenAuthenticatedUser_whenRequesting_thenShowsMySchemaView() throws Exception {
+        // Given
+        var githubUser = new GithubUser("test-id", "test-name", "test@email.com");
+
+        // When & Then
+        mvc.perform(
+                get("/table-schema/my-schemas")
+                        .with(oauth2Login().oauth2User(githubUser))
+        )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(model().attributeExists("tableSchemas"))
@@ -113,12 +134,14 @@ record TableSchemaControllerTest(
     @Test
     void givenAuthenticatedUserAndSchemaName_whenDeleting_thenRedirectsToTableSchemaView() throws Exception {
         // Given
+        var githubUser = new GithubUser("test-id", "test-name", "test@email.com");
         String schemaName = "test_schema";
 
         // When & Then
         mvc.perform(
                 post("/table-schema/my-schemas/{schemaName}", schemaName)
                         .with(csrf())
+                        .with(oauth2Login().oauth2User(githubUser))
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/table-schema/my-schemas"));
