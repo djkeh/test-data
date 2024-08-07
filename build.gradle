@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'uno.fastcampus'
-version = '0.0.1-SNAPSHOT'
+version = 'v1.0'
 
 java {
     toolchain {
@@ -43,4 +43,11 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
     jvmArgs('-Xshare:off', '-XX:+EnableDynamicAgentLoading')
+}
+
+// Heroku 설정
+jar {
+    manifest {
+        attributes('Main-Class': 'uno.fastcampus.testdata.TestDataApplication')
+    }
 }
