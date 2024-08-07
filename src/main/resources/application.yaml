@@ -32,3 +32,14 @@ spring:
 spring:
   config.activate.on-profile: test
   datasource.url: jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE
+
+---
+
+spring:
+  config.activate.on-profile: heroku
+  datasource:
+    url: ${JAWSDB_URL}
+  jpa:
+    hibernate.ddl-auto: create
+    defer-datasource-initialization: true
+  sql.init.mode: always
