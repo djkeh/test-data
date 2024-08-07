@@ -1,5 +1,6 @@
 package uno.fastcampus.testdata.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +14,10 @@ import uno.fastcampus.testdata.dto.TableSchemaDto;
 import uno.fastcampus.testdata.repository.TableSchemaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -47,6 +50,43 @@ class TableSchemaServiceTest {
                 .extracting("schemaName")
                 .containsExactly("table1", "table2", "table3");
         then(tableSchemaRepository).should().findByUserId(userId, Pageable.unpaged());
+    }
+
+    @DisplayName("사용자 ID와 스키마 이름이 주어지면, 테이블 스키마를 반환한다.")
+    @Test
+    void givenUserIdAndSchemaName_whenLoadingMySchema_thenReturnsTableSchema() {
+        // Given
+        String userId = "userId";
+        String schemaName = "table1";
+        TableSchema tableSchema = TableSchema.of(schemaName, userId);
+        given(tableSchemaRepository.findByUserIdAndSchemaName(userId, schemaName)).willReturn(Optional.of(tableSchema));
+
+        // When
+        TableSchemaDto result = sut.loadMySchema(userId, schemaName);
+
+        // Then
+        assertThat(result)
+                .hasFieldOrPropertyWithValue("schemaName", schemaName)
+                .hasFieldOrPropertyWithValue("userId", userId);
+        then(tableSchemaRepository).should().findByUserIdAndSchemaName(userId, schemaName);
+    }
+
+    @DisplayName("사용자 ID와 스키마 이름에 대응하는 테이블 스키마가 없으면, 예외를 던진다.")
+    @Test
+    void givenUserIdAndSchemaName_whenLoadingNonexistentMySchema_thenThrowsException() {
+        // Given
+        String userId = "userId";
+        String schemaName = "table1";
+        given(tableSchemaRepository.findByUserIdAndSchemaName(userId, schemaName)).willReturn(Optional.empty());
+
+        // When
+        Throwable t = catchThrowable(() -> sut.loadMySchema(userId, schemaName));
+
+        // Then
+        assertThat(t)
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("테이블 스키마가 없습니다 - userId: " + userId + ", schemaName: " + schemaName);
+        then(tableSchemaRepository).should().findByUserIdAndSchemaName(userId, schemaName);
     }
 
 }

@@ -35,10 +35,13 @@ public class TableSchemaController {
 
     @GetMapping("/table-schema")
     public String tableSchema(
+            @AuthenticationPrincipal GithubUser githubUser,
             @RequestParam(required = false) String schemaName,
             Model model
     ) {
-        var tableSchema = defaultTableSchema(schemaName);
+        TableSchemaResponse tableSchema = (githubUser != null && schemaName != null) ?
+                TableSchemaResponse.fromDto(tableSchemaService.loadMySchema(githubUser.id(), schemaName)) :
+                defaultTableSchema(schemaName);
 
         model.addAttribute("tableSchema", tableSchema);
         model.addAttribute("mockDataTypes", MockDataType.toObjects());
@@ -46,8 +49,6 @@ public class TableSchemaController {
 
         return "table-schema";
     }
-
-
 
     @PostMapping("/table-schema")
     public String createOrUpdateTableSchema(

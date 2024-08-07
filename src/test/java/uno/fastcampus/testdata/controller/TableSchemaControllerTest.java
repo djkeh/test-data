@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uno.fastcampus.testdata.config.SecurityConfig;
 import uno.fastcampus.testdata.domain.constant.ExportFileType;
 import uno.fastcampus.testdata.domain.constant.MockDataType;
+import uno.fastcampus.testdata.dto.TableSchemaDto;
 import uno.fastcampus.testdata.dto.request.SchemaFieldRequest;
 import uno.fastcampus.testdata.dto.request.TableSchemaExportRequest;
 import uno.fastcampus.testdata.dto.request.TableSchemaRequest;
@@ -21,6 +22,7 @@ import uno.fastcampus.testdata.service.TableSchemaService;
 import uno.fastcampus.testdata.util.FormDataEncoder;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
@@ -55,6 +57,7 @@ class TableSchemaControllerTest {
                 .andExpect(model().attributeExists("mockDataTypes"))
                 .andExpect(model().attributeExists("fileTypes"))
                 .andExpect(view().name("table-schema"));
+        then(tableSchemaService).shouldHaveNoInteractions();
     }
 
     @DisplayName("[GET] 테이블 스키마 조회, 로그인 + 특정 테이블 스키마 (정상)")
@@ -63,6 +66,7 @@ class TableSchemaControllerTest {
         // Given
         var githubUser = new GithubUser("test-id", "test-name", "test@email.com");
         var schemaName = "test_schema";
+        given(tableSchemaService.loadMySchema(githubUser.id(), schemaName)).willReturn(TableSchemaDto.of(schemaName, githubUser.id(), null, Set.of()));
 
         // When & Then
         mvc.perform(
@@ -78,6 +82,7 @@ class TableSchemaControllerTest {
                 .andExpect(model().attributeExists("fileTypes"))
                 .andExpect(content().string(containsString(schemaName))) // html 전체 검사하므로 정확하지 않은 테스트 방식
                 .andExpect(view().name("table-schema"));
+        then(tableSchemaService).should().loadMySchema(githubUser.id(), schemaName);
     }
 
     @DisplayName("[POST] 테이블 스키마 생성, 변경 (정상)")
