@@ -49,7 +49,7 @@ class JpaRepositoryTest {
         // Given
 
         // When
-        List<MockData> mockDataList = mockDataRepository.findAll();
+        List<MockData> mockDataList = mockDataRepository.findByMockDataType(MockDataType.NAME);
         List<SchemaField> schemaFields = schemaFieldRepository.findAll();
         List<TableSchema> tableSchemas = tableSchemaRepository.findAll();
 
