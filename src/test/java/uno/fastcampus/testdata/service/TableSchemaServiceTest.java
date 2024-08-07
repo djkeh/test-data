@@ -19,8 +19,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 
 @DisplayName("[Service] 테이블 스키마 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -123,6 +122,21 @@ class TableSchemaServiceTest {
         // Then
         then(tableSchemaRepository).should().findByUserIdAndSchemaName(dto.userId(), dto.schemaName());
         then(tableSchemaRepository).should().save(dto.createEntity());
+    }
+
+    @DisplayName("사용자 ID와 스키마 이름이 주어지면, 테이블 스키마를 삭제한다.")
+    @Test
+    void givenUserIdAndSchemaName_whenDeleting_thenDeletesTableSchema() {
+        // Given
+        String userId = "userId";
+        String schemaName = "table1";
+        willDoNothing().given(tableSchemaRepository).deleteByUserIdAndSchemaName(userId, schemaName);
+
+        // When
+        sut.deleteTableSchema(userId, schemaName);
+
+        // Then
+        then(tableSchemaRepository).should().deleteByUserIdAndSchemaName(userId, schemaName);
     }
 
 }
