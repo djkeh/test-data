@@ -21,6 +21,7 @@ import uno.fastcampus.testdata.dto.response.SchemaFieldResponse;
 import uno.fastcampus.testdata.dto.response.SimpleTableSchemaResponse;
 import uno.fastcampus.testdata.dto.response.TableSchemaResponse;
 import uno.fastcampus.testdata.dto.security.GithubUser;
+import uno.fastcampus.testdata.service.SchemaExportService;
 import uno.fastcampus.testdata.service.TableSchemaService;
 
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import java.util.List;
 public class TableSchemaController {
 
     private final TableSchemaService tableSchemaService;
+    private final SchemaExportService schemaExportService;
     private final ObjectMapper mapper;
 
     @GetMapping("/table-schema")
@@ -89,12 +91,20 @@ public class TableSchemaController {
     }
 
     @GetMapping("/table-schema/export")
-    public ResponseEntity<String> exportTableSchema(TableSchemaExportRequest tableSchemaExportRequest) {
+    public ResponseEntity<String> exportTableSchema(
+            @AuthenticationPrincipal GithubUser githubUser,
+            TableSchemaExportRequest tableSchemaExportRequest
+    ) {
+        String body = schemaExportService.export(
+                tableSchemaExportRequest.getFileType(),
+                tableSchemaExportRequest.toDto(githubUser != null ? githubUser.id() : null),
+                tableSchemaExportRequest.getRowCount()
+        );
         String filename = tableSchemaExportRequest.getSchemaName() + "." + tableSchemaExportRequest.getFileType().name().toLowerCase();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-                .body(json(tableSchemaExportRequest)); // TODO: 나중에 데이터 바꿔야 함
+                .body(body);
     }
 
 
@@ -109,14 +119,6 @@ public class TableSchemaController {
                         new SchemaFieldResponse("my_car", MockDataType.CAR, 4, 50, null, null)
                 )
         );
-    }
-
-    private String json(Object object) {
-        try {
-            return mapper.writeValueAsString(object);
-        } catch (JsonProcessingException jpe) {
-            throw new RuntimeException(jpe);
-        }
     }
 
 }

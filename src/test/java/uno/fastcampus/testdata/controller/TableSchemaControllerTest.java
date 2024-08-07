@@ -18,6 +18,7 @@ import uno.fastcampus.testdata.dto.request.SchemaFieldRequest;
 import uno.fastcampus.testdata.dto.request.TableSchemaExportRequest;
 import uno.fastcampus.testdata.dto.request.TableSchemaRequest;
 import uno.fastcampus.testdata.dto.security.GithubUser;
+import uno.fastcampus.testdata.service.SchemaExportService;
 import uno.fastcampus.testdata.service.TableSchemaService;
 import uno.fastcampus.testdata.util.FormDataEncoder;
 
@@ -42,6 +43,7 @@ class TableSchemaControllerTest {
     @Autowired private ObjectMapper mapper;
 
     @MockBean private TableSchemaService tableSchemaService;
+    @MockBean private SchemaExportService schemaExportService;
 
     @DisplayName("[GET] 테이블 스키마 조회, 비로그인 최초 진입 (정상)")
     @Test
@@ -162,7 +164,7 @@ class TableSchemaControllerTest {
         then(tableSchemaService).should().deleteTableSchema(githubUser.id(), schemaName);
     }
 
-    @DisplayName("[GET] 테이블 스키마 파일 다운로드 (정상)")
+    @DisplayName("[GET] 테이블 스키마 파일 다운로드, 비로그인 (정상)")
     @Test
     void givenTableSchema_whenDownloading_thenReturnsFile() throws Exception {
         // Given
@@ -177,13 +179,49 @@ class TableSchemaControllerTest {
                 )
         );
         String queryParam = formDataEncoder.encode(request, false);
+        String expectedBody = "id,name,age\n1,uno,20";
+        given(schemaExportService.export(request.getFileType(), request.toDto(null), request.getRowCount()))
+                .willReturn(expectedBody);
 
         // When & Then
         mvc.perform(get("/table-schema/export?" + queryParam))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
                 .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=test.csv"))
-                .andExpect(content().json(mapper.writeValueAsString(request))); // TODO: 나중에 데이터 바꿔야 함
+                .andExpect(content().string(expectedBody));
+        then(schemaExportService).should().export(request.getFileType(), request.toDto(null), request.getRowCount());
+    }
+
+    @DisplayName("[GET] 테이블 스키마 파일 다운로드, 로그인 (정상)")
+    @Test
+    void givenAuthenticatedUserAndTableSchema_whenDownloading_thenReturnsFile() throws Exception {
+        // Given
+        var githubUser = new GithubUser("test-id", "test-name", "test@email.com");
+        TableSchemaExportRequest request = TableSchemaExportRequest.of(
+                "test",
+                77,
+                ExportFileType.CSV,
+                List.of(
+                        SchemaFieldRequest.of("id", MockDataType.ROW_NUMBER, 1, 0, null, null),
+                        SchemaFieldRequest.of("name", MockDataType.STRING, 1, 0, "option", "well"),
+                        SchemaFieldRequest.of("age", MockDataType.NUMBER, 3, 20, null, null)
+                )
+        );
+        String queryParam = formDataEncoder.encode(request, false);
+        String expectedBody = "id,name,age\n1,uno,20";
+        given(schemaExportService.export(request.getFileType(), request.toDto(githubUser.id()), request.getRowCount()))
+                .willReturn(expectedBody);
+
+        // When & Then
+        mvc.perform(
+                get("/table-schema/export?" + queryParam)
+                        .with(oauth2Login().oauth2User(githubUser))
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=test.csv"))
+                .andExpect(content().string(expectedBody));
+        then(schemaExportService).should().export(request.getFileType(), request.toDto(githubUser.id()), request.getRowCount());
     }
 
 }
