@@ -6,6 +6,7 @@
   <title>테스트 데이터 생성기 - 테이블 스키마</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
@@ -134,6 +135,14 @@
       ]
     });
     schemaFieldList.sort('field-order-value', { order: 'asc' });
+    const sortable = new Sortable.create(
+        document.getElementById('field-list'),
+        {
+          handle: '.handle',
+          animation: 150,
+          onUpdate: () => { resetData(schemaFieldList); }
+        }
+    );
 
     document.querySelectorAll('.delete-row').forEach(btn => {
       enrollDeleteRowEvent(btn, schemaFieldList);
