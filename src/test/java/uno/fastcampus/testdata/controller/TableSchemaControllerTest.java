@@ -169,7 +169,7 @@ class TableSchemaControllerTest {
         TableSchemaExportRequest request = TableSchemaExportRequest.of(
                 "test",
                 77,
-                ExportFileType.JSON,
+                ExportFileType.CSV,
                 List.of(
                         SchemaFieldRequest.of("id", MockDataType.ROW_NUMBER, 1, 0, null, null),
                         SchemaFieldRequest.of("name", MockDataType.STRING, 1, 0, "option", "well"),
@@ -182,7 +182,7 @@ class TableSchemaControllerTest {
         mvc.perform(get("/table-schema/export?" + queryParam))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
-                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=table-schema.txt"))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=test.csv"))
                 .andExpect(content().json(mapper.writeValueAsString(request))); // TODO: 나중에 데이터 바꿔야 함
     }
 
