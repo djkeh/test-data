@@ -22,7 +22,6 @@
 
 Spring Boot
 
-* Spring Boot Actuator
 * Spring Boot DevTools
 * Spring Cache Abstraction
 * Spring Data JPA
