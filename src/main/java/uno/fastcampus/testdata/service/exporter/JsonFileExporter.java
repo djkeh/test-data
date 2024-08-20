@@ -11,7 +11,6 @@ import uno.fastcampus.testdata.dto.TableSchemaDto;
 import uno.fastcampus.testdata.service.generator.MockDataGeneratorContext;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -37,12 +36,22 @@ public class JsonFileExporter implements MockDataFileExporter {
                 dto.schemaFields().stream()
                         .sorted(Comparator.comparing(SchemaFieldDto::fieldOrder))
                         .forEach(field -> {
-                            map.put(field.fieldName(), mockDataGeneratorContext.generate(
+                            String generatedValue = mockDataGeneratorContext.generate(
                                     field.mockDataType(),
                                     field.blankPercent(),
                                     field.typeOptionJson(),
                                     field.forceValue()
-                            ));
+                            );
+                            if (generatedValue == null) {
+                                map.put(field.fieldName(), null);
+                            } else {
+                                var jsonValue = switch (field.mockDataType().jsonType()) {
+                                    case NUMBER -> Long.valueOf(generatedValue);
+                                    case BOOLEAN -> Boolean.valueOf(generatedValue);
+                                    default -> generatedValue;
+                                };
+                                map.put(field.fieldName(), jsonValue);
+                            }
                         });
                 list.add(map);
             });

@@ -57,7 +57,11 @@ class JsonFileExporterTest {
                 )
         );
         int rowCount = 10;
-        given(mockDataGeneratorContext.generate(any(), any(), any(), any())).willReturn("test-value");
+        given(mockDataGeneratorContext.generate(eq(MockDataType.ROW_NUMBER), any(), any(), any())).willReturn("1");
+        given(mockDataGeneratorContext.generate(eq(MockDataType.NAME), any(), any(), any())).willReturn("test-name");
+        given(mockDataGeneratorContext.generate(eq(MockDataType.DATETIME), any(), any(), any())).willReturn("2024-01-02T03:04:05");
+        given(mockDataGeneratorContext.generate(eq(MockDataType.NUMBER), any(), any(), any())).willReturn(null);
+        given(mockDataGeneratorContext.generate(eq(MockDataType.CAR), any(), any(), any())).willReturn("test-횬다이");
 
         // When
         String result = sut.export(dto, rowCount);
@@ -68,7 +72,7 @@ class JsonFileExporterTest {
                 .startsWith("[")
                 .endsWith("]")
                 .contains("""
-                        {"id":"test-value","name":"test-value","age":"test-value","car":"test-value","created_at":"test-value"}"""
+                        {"id":1,"name":"test-name","age":null,"car":"test-횬다이","created_at":"2024-01-02T03:04:05"}"""
                 );
         then(mockDataGeneratorContext).should(times(rowCount * dto.schemaFields().size())).generate(any(), any(), any(), any());
         then(mapper).should().writeValueAsString(any());
@@ -78,7 +82,7 @@ class JsonFileExporterTest {
     @Test
     void givenSchemaAndRowCount_whenFailingToJsonFormatting_thenReturnsEmptyString() throws Exception {
         // Given
-        TableSchemaDto dto = TableSchemaDto.of("test_schema", "uno", null, Set.of(SchemaFieldDto.of("id", MockDataType.ROW_NUMBER, 1, 0, null, null)));
+        TableSchemaDto dto = TableSchemaDto.of("test_schema", "uno", null, Set.of(SchemaFieldDto.of("name", MockDataType.NAME, 1, 0, null, null)));
         int rowCount = 10;
         given(mockDataGeneratorContext.generate(any(), any(), any(), any())).willReturn("test-value");
         willThrow(JsonProcessingException.class).given(mapper).writeValueAsString(any());
