@@ -39,6 +39,7 @@ public enum MockDataType {
     }
 
     public boolean isBaseType() { return baseType == null; }
+    public MockDataType jsonType() { return isBaseType() ? this : baseType; }
 
     public MockDataTypeObject toObject() {
         return new MockDataTypeObject(
