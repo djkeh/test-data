@@ -1,2 +1,2 @@
-src/main/java/uno/fastcampus/testdata/* -linguist-vendored
-src/test/java/uno/fastcampus/testdata/* -linguist-vendored
+src/main/java/uno/fastcampus/testdata/** -linguist-vendored
+src/test/java/uno/fastcampus/testdata/** -linguist-vendored
