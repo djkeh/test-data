@@ -52,11 +52,5 @@ Spring Boot
 
 프로젝트에 관해 궁금하신 점이나 건의 사항이 있으시다면 아래 항목을 이용해 주세요.
 
-* 질문 - 10개 프로젝트로 시작하는 백엔드 웹개발: https://fastcampus.co.kr/qna/234959/1
+* 질문: https://github.com/djkeh/test-data/discussions
 * 버그 리포트, 제안 사항: https://github.com/djkeh/test-data/issues
-
-## 프로젝트 데모
-
-본 프로젝트의 데모를 아래 링크에서 확인하실 수 있습니다. 초기 접속 반응이 10초 내외로 늦을 수 있습니다.
-
-* [한글 테스트 데이터 자동 생성기 서비스 데모](https://test-data-39d971fdb1c0.herokuapp.com/)
