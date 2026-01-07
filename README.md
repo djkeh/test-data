@@ -1,6 +1,6 @@
 # 한글 테스트 데이터 자동 생성기 서비스
 
-[![GitKraken shield](https://img.shields.io/badge/GitKraken-Legendary%20Git%20Tools-teal?style=plastic&logo=gitkraken)](https://gitkraken.dev/)
+[![GitKraken shield](https://img.shields.io/badge/GitKraken-Legendary%20Git%20Tools-teal?style=plastic&logo=gitkraken)](https://gitkraken.cello.so/rcr7uWnNUdm)
 
 한글 테스트 데이터 자동 생성기 서비스입니다. 적당한 데이터 구조를 받아서 다양한 형식의 테스트용 가짜 데이터를 만들어 특정 파일 포맷으로 다운로드 받을 수 있습니다.
 
